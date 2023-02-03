@@ -1,0 +1,28 @@
+---
+title: "TP1 - Criminalité à Toronto"
+author: "groupe B"
+output: github_document
+---
+
+### Chargement librairies
+```{r load-packages, message=FALSE}
+library(tidyverse) 
+library(dsbox) 
+library(corrplot)
+```
+
+### Chargement datasets
+
+```{r load-data, message=FALSE}
+budget <- read_csv("data/Budget_2022.csv")
+Major_Crime <- read_csv("data/Major_Crime_Indicators.csv")
+properties <- read_csv("data/properties.csv")
+```
+
+### Résummer des données
+
+```{r summary, message=FALSE}
+summary(budget)
+summary(Major_Crime)
+summary(properties)
+```
