@@ -9,6 +9,7 @@ output: github_document
 library(tidyverse) 
 library(dsbox) 
 library(corrplot)
+library(dplyr)
 ```
 
 ### Chargement datasets
@@ -21,8 +22,49 @@ properties <- read_csv("data/properties.csv")
 
 ### Résummer des données
 
+```{r fonction, message=FALSE}
+
+my_summary <- function(x) {
+  if(is.character(x) == TRUE)
+  {
+    uniqv <- unique(x)
+    output1 = uniqv[which.max(tabulate(match(x, uniqv)))]
+    names(output1) <- "mode"
+    output2 = table(x)[output1]/length(x)
+    names(output2) <- "freq"
+    
+    y <- x[x!=output1]
+    uniqv <- unique(y)
+    output3 = uniqv[which.max(tabulate(match(y, uniqv)))]
+    names(output3) <- "mode 2"
+    output4 = table(y)[output3]/length(x)
+    names(output4) <- "freq 2"
+    
+    if(!is.na(output3))
+    {
+      return(c(output1,output2,output3,output4))
+    }
+    return(c(output1,output2))
+  }
+  if(is.numeric(x) == TRUE)
+  {
+    output1 <- summary(x)
+    output2 <- sd(x)
+    names(output2) <- "Sd."
+    if(is.na(output2))
+    {
+        return(c(output1, output2))
+    }
+    output3 <- quantile(x)[4] - quantile(x)[2]
+    names(output3) <- "IQR"
+    return(c(output1, output2, output3))
+  }
+  }
+
+```
+
 ```{r summary, message=FALSE}
-summary(budget)
-summary(Major_Crime)
-summary(properties)
+sapply(budget,my_summary)
+sapply(Major_Crime,my_summary)
+sapply(properties,my_summary)
 ```
