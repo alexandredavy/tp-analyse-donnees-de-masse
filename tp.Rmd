@@ -17,7 +17,7 @@ library(dplyr)
 ```{r load-data, message=FALSE}
 budget <- read_csv("data/Budget_2022.csv")
 Major_Crime <- read_csv("data/Major_Crime_Indicators.csv")
-propertie <- read_csv("data/properties.csv")
+properties <- read_csv("data/properties.csv")
 ```
 ### Résummer des données
 
@@ -82,7 +82,7 @@ select_numeric_cols <- function(df) {
 
 
 ```{r}
-propertie_num <- select_numeric_cols(propertie)
+propertie_num <- select_numeric_cols(properties)
 print(propertie_num)
 ```
 
