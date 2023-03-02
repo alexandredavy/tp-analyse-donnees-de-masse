@@ -17,9 +17,8 @@ library(dplyr)
 ```{r load-data, message=FALSE}
 budget <- read_csv("data/Budget_2022.csv")
 Major_Crime <- read_csv("data/Major_Crime_Indicators.csv")
-properties <- read_csv("data/properties.csv")
+propertie <- read_csv("data/properties.csv")
 ```
-
 ### Résummer des données
 
 ```{r fonction, message=FALSE}
@@ -67,4 +66,85 @@ my_summary <- function(x) {
 sapply(budget,my_summary)
 sapply(Major_Crime,my_summary)
 sapply(properties,my_summary)
+```
+
+
+
+
+
+```{r}
+select_numeric_cols <- function(df) {
+  numeric_cols <- sapply(df, is.numeric) # Détermine les colonnes numériques
+  df_numeric <- df[, numeric_cols] # Sélectionne les colonnes numériques
+  return(df_numeric) # Retourne le dataframe avec les colonnes numériques uniquement
+}
+```
+
+
+```{r}
+propertie_num <- select_numeric_cols(propertie)
+print(propertie_num)
+```
+
+```{r}
+cor(propertie_num)
+```
+```{r}
+cor_pro_num = cor(propertie_num)
+```
+
+```{r}
+corrplot(cor_pro_num, type = "upper", order = "hclust", tl.col = 'black', tl.srt = 45)
+```
+
+```{r}
+budget_num <- select_numeric_cols(budget)
+
+```
+
+```{r}
+remove_variable <- function(data, var_name) {
+  data[, var_name] <- NULL
+  return(data)
+}
+
+budget_num2<- remove_variable(budget_num, "Fiscal_Year")
+```
+
+
+```{r}
+cor(budget_num2)
+```
+```{r}
+cor_bud2_num = cor(budget_num2)
+```
+
+```{r}
+corrplot(cor_bud2_num, type = "upper", order = "hclust", tl.col = 'black', tl.srt = 45)
+```
+
+
+```{r}
+Major_Crime_num <- select_numeric_cols(Major_Crime)
+```
+
+```{r}
+Major_Crime_num2<- remove_variable(Major_Crime_num, "occurrenceyear")
+Major_Crime_num3<- remove_variable(Major_Crime_num2, "occurrenceday")
+Major_Crime_num4<- remove_variable(Major_Crime_num3, "occurrencedayofyear")
+
+
+```
+
+
+```{r}
+cor(Major_Crime_num4)
+```
+
+```{r}
+cor_maj4_num = cor(Major_Crime_num4)
+```
+
+```{r}
+corrplot(cor_maj4_num, type = "upper", order = "hclust", tl.col = 'black', tl.srt = 45)
 ```
