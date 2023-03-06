@@ -64,6 +64,7 @@ my_summary <- function(x) {
     names(output5) <- "Variance"
     
     output6 <- output2 / mean(x)
+    names(output6) <- "coeficient de variation"
     
     return(c(output1, output2, output3,output4, output5, output6))
   }
@@ -157,3 +158,83 @@ cor_maj4_num = cor(Major_Crime_num4)
 ```{r}
 corrplot(cor_maj4_num, type = "upper", order = "hclust", tl.col = 'black', tl.srt = 45)
 ```
+
+### Visualisation
+
+```{r}
+Major_Crimetest <- Major_Crime %>% mutate(
+  offence = case_when(substr(offence,1,7) == "Assault" ~ "Assault",
+                      substr(offence,1,10) == "Aggravated" ~ "Assault",
+                      substr(offence,1,3) == "B&E" ~ "B&E",
+                      substr(offence,1,7) == "Robbery" ~ "Robbery",
+                      substr(offence,1,5) == "Theft" ~ "Robbery",
+                      substr(offence,1,9) == "Discharge" ~ "Firearm",
+                      substr(offence,1,3) == "Use" ~ "Firearm",
+                      substr(offence,1,8) == "Pointing" ~ "Firearm",
+                      substr(offence,1,3) == "Air" ~ "Firearm",
+                      TRUE ~ offence))
+
+Major_Crimetest$offence <- fct_infreq(Major_Crimetest$offence)
+
+ggplot(Major_Crimetest) +
+  aes(x = offence) +
+  geom_bar(fill = "#112446") +
+  theme_minimal()+
+  labs(x = "Type d'infractions", y = "Nombre", title = "classement des types infractions à Toronto")
+```
+
+
+
+
+```{r}
+budget %>%
+ filter(!(Command_Name %in% "Information&Technology Command (Command)")) %>%
+ filter(!(Pillar_Name %in% 
+ c("Centralized Service Chrgs & UNS (Pillar)", "Professionalism & Accountability (Pillar", "Finance & Business Mgmt (Pillar)", 
+ "People & Culture (Pillar)", "Information&Technology Command (Pillar)", "Combat Gun&Gang Violence Grant (Pillar)", 
+ "Community Safety&Policing Grant (Pillar)", "Provincial Guns&Gangs Grnt2 (Pillar)", "Community Safety&Policing Grnt2 (Pillar)"
+ ))) %>%
+ filter(!(Feature_Category %in% "Materials & Supplies")) %>%
+ ggplot() +
+  aes(x = Feature_Category, y = Amount) +
+  geom_col(fill = "#112446") +
+  theme_minimal()+
+  labs(x = "catégorie de fonctionnalités", y = "montant", title = "gestion de finance de la police de Toronto")
+```
+
+```{r}
+Major_Crimetest <- Major_Crimetest[Major_Crime$X != 0,]
+Major_Crimetest <- Major_Crimetest[Major_Crimetest$reportedmonth =="January",]
+Major_Crimetest <- Major_Crimetest[Major_Crimetest$reportedday < 5,]
+Major_Crimetest <- Major_Crimetest[Major_Crimetest$X > -8870000,]
+Major_Crimetest <- Major_Crimetest[Major_Crimetest$Y < 5440000,]
+
+ggplot(Major_Crimetest, mapping = aes(x = X, y = Y, color = offence)) +
+  geom_point(alpha = 0.5)+
+  labs(x = "Longitude", y = "Latitude", title = "Crime à Toronto")
+
+```
+
+
+```{r}
+
+propertiestest <- properties[properties$lng > -85,]
+propertiestest <- propertiestest[propertiestest$lng < -73,]
+propertiestest <- propertiestest[propertiestest$lat < 46.5,]
+colnames(propertiestest)[4] <- "Price"
+
+ggplot(propertiestest) +
+  aes(x = lng, y = lat, colour = Price) +
+  geom_point(shape = "circle", size = 1.5) +
+  scale_color_distiller(palette = "Set1", direction = 1) +
+  theme_minimal()+
+  labs(x = "Longitude", y = "Latitude", title = "Ventes Immobilière à Toronto")
+
+
+```
+
+
+
+
+
+

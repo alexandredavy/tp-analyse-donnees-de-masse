@@ -68,6 +68,7 @@ my_summary <- function(x) {
     names(output5) <- "Variance"
     
     output6 <- output2 / mean(x)
+    names(output6) <- "coeficient de variation"
     
     return(c(output1, output2, output3,output4, output5, output6))
   }
@@ -79,10 +80,14 @@ sapply(budget,my_summary)
 ```
 
     ## $Fiscal_Year
-    ##       Min.    1st Qu.     Median       Mean    3rd Qu.       Max. Ecart type 
-    ##       2022       2022       2022       2022       2022       2022          0 
-    ##        IQR    Etendue   Variance Ecart type 
-    ##          0          0          0          0 
+    ##                    Min.                 1st Qu.                  Median 
+    ##                    2022                    2022                    2022 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##                    2022                    2022                    2022 
+    ##              Ecart type                     IQR                 Etendue 
+    ##                       0                       0                       0 
+    ##                Variance coeficient de variation 
+    ##                       0                       0 
     ## 
     ## $Budget_Type
     ##              mode              freq 
@@ -127,10 +132,14 @@ sapply(budget,my_summary)
     ##          "Services" "0.325501713166911"          "Salaries" "0.190406265296133" 
     ## 
     ## $Cost_Element
-    ##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
-    ## 1.501000e+03 1.578000e+03 2.082000e+03 3.094035e+03 4.312000e+03 9.453000e+03 
-    ##   Ecart type          IQR      Etendue     Variance   Ecart type 
-    ## 1.754408e+03 2.734000e+03 7.952000e+03 3.077946e+06 5.670291e-01 
+    ##                    Min.                 1st Qu.                  Median 
+    ##            1.501000e+03            1.578000e+03            2.082000e+03 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##            3.094035e+03            4.312000e+03            9.453000e+03 
+    ##              Ecart type                     IQR                 Etendue 
+    ##            1.754408e+03            2.734000e+03            7.952000e+03 
+    ##                Variance coeficient de variation 
+    ##            3.077946e+06            5.670291e-01 
     ## 
     ## $Cost_Element_Long_Name
     ##                   mode                   freq                 mode 2 
@@ -139,42 +148,58 @@ sapply(budget,my_summary)
     ##   "0.0231685429923315" 
     ## 
     ## $Amount
-    ##          Min.       1st Qu.        Median          Mean       3rd Qu. 
-    ## -4.381020e+07  0.000000e+00  0.000000e+00  1.910661e+05  3.400000e+03 
-    ##          Max.    Ecart type           IQR       Etendue      Variance 
-    ##  5.716110e+07  2.049826e+06  3.400000e+03  1.009713e+08  4.201786e+12 
-    ##    Ecart type 
-    ##  1.072836e+01 
+    ##                    Min.                 1st Qu.                  Median 
+    ##           -4.381020e+07            0.000000e+00            0.000000e+00 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##            1.910661e+05            3.400000e+03            5.716110e+07 
+    ##              Ecart type                     IQR                 Etendue 
+    ##            2.049826e+06            3.400000e+03            1.009713e+08 
+    ##                Variance coeficient de variation 
+    ##            4.201786e+12            1.072836e+01 
     ## 
     ## $ObjectId
-    ##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
-    ## 1.000000e+00 1.533000e+03 3.065000e+03 3.065000e+03 4.597000e+03 6.129000e+03 
-    ##   Ecart type          IQR      Etendue     Variance   Ecart type 
-    ## 1.769434e+03 3.064000e+03 6.128000e+03 3.130898e+06 5.773032e-01
+    ##                    Min.                 1st Qu.                  Median 
+    ##            1.000000e+00            1.533000e+03            3.065000e+03 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##            3.065000e+03            4.597000e+03            6.129000e+03 
+    ##              Ecart type                     IQR                 Etendue 
+    ##            1.769434e+03            3.064000e+03            6.128000e+03 
+    ##                Variance coeficient de variation 
+    ##            3.130898e+06            5.773032e-01
 
 ``` r
 sapply(Major_Crime,my_summary)
 ```
 
     ## $X
-    ##          Min.       1st Qu.        Median          Mean       3rd Qu. 
-    ## -8.910331e+06 -8.846681e+06 -8.838015e+06 -8.724562e+06 -8.829868e+06 
-    ##          Max.    Ecart type           IQR       Etendue      Variance 
-    ##  0.000000e+00  9.966746e+05  1.681260e+04  8.910331e+06  9.933602e+11 
-    ##    Ecart type 
-    ## -1.142378e-01 
+    ##                    Min.                 1st Qu.                  Median 
+    ##           -8.910331e+06           -8.846681e+06           -8.838015e+06 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##           -8.724562e+06           -8.829868e+06            0.000000e+00 
+    ##              Ecart type                     IQR                 Etendue 
+    ##            9.966746e+05            1.681260e+04            8.910331e+06 
+    ##                Variance coeficient de variation 
+    ##            9.933602e+11           -1.142378e-01 
     ## 
     ## $Y
-    ##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
-    ## 0.000000e+00 5.412946e+06 5.419000e+06 5.350375e+06 5.426986e+06 5.517228e+06 
-    ##   Ecart type          IQR      Etendue     Variance   Ecart type 
-    ## 6.112283e+05 1.403951e+04 5.517228e+06 3.736000e+11 1.142403e-01 
+    ##                    Min.                 1st Qu.                  Median 
+    ##            0.000000e+00            5.412946e+06            5.419000e+06 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##            5.350375e+06            5.426986e+06            5.517228e+06 
+    ##              Ecart type                     IQR                 Etendue 
+    ##            6.112283e+05            1.403951e+04            5.517228e+06 
+    ##                Variance coeficient de variation 
+    ##            3.736000e+11            1.142403e-01 
     ## 
     ## $Index_
-    ##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
-    ## 1.000000e+00 7.530900e+04 1.506170e+05 1.506170e+05 2.259250e+05 3.012330e+05 
-    ##   Ecart type          IQR      Etendue     Variance   Ecart type 
-    ## 8.695862e+04 1.506160e+05 3.012320e+05 7.561802e+09 5.773493e-01 
+    ##                    Min.                 1st Qu.                  Median 
+    ##            1.000000e+00            7.530900e+04            1.506170e+05 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##            1.506170e+05            2.259250e+05            3.012330e+05 
+    ##              Ecart type                     IQR                 Etendue 
+    ##            8.695862e+04            1.506160e+05            3.012320e+05 
+    ##                Variance coeficient de variation 
+    ##            7.561802e+09            5.773493e-01 
     ## 
     ## $event_unique_id
     ##                   mode                   freq                 mode 2 
@@ -215,26 +240,38 @@ sapply(Major_Crime,my_summary)
     ##           "Outside" "0.265837408252084"         "Apartment" "0.239220138563836" 
     ## 
     ## $ucr_code
-    ##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
-    ## 1.410000e+03 1.430000e+03 1.450000e+03 1.702423e+03 2.120000e+03 2.135000e+03 
-    ##   Ecart type          IQR      Etendue     Variance   Ecart type 
-    ## 3.262601e+02 6.900000e+02 7.250000e+02 1.064457e+05 1.916446e-01 
+    ##                    Min.                 1st Qu.                  Median 
+    ##            1.410000e+03            1.430000e+03            1.450000e+03 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##            1.702423e+03            2.120000e+03            2.135000e+03 
+    ##              Ecart type                     IQR                 Etendue 
+    ##            3.262601e+02            6.900000e+02            7.250000e+02 
+    ##                Variance coeficient de variation 
+    ##            1.064457e+05            1.916446e-01 
     ## 
     ## $ucr_ext
-    ##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
-    ##  100.0000000  100.0000000  100.0000000  146.5655854  200.0000000  230.0000000 
-    ##   Ecart type          IQR      Etendue     Variance   Ecart type 
-    ##   51.9889665  100.0000000  130.0000000 2702.8526402    0.3547147 
+    ##                    Min.                 1st Qu.                  Median 
+    ##             100.0000000             100.0000000             100.0000000 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##             146.5655854             200.0000000             230.0000000 
+    ##              Ecart type                     IQR                 Etendue 
+    ##              51.9889665             100.0000000             130.0000000 
+    ##                Variance coeficient de variation 
+    ##            2702.8526402               0.3547147 
     ## 
     ## $offence
     ##                mode                freq              mode 2              freq 2 
     ##           "Assault" "0.366918631092875"               "B&E" "0.166588653965535" 
     ## 
     ## $reportedyear
-    ##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
-    ## 2.014000e+03 2.016000e+03 2.018000e+03 2.017877e+03 2.020000e+03 2.022000e+03 
-    ##   Ecart type          IQR      Etendue     Variance   Ecart type 
-    ## 2.436940e+00 4.000000e+00 8.000000e+00 5.938676e+00 1.207675e-03 
+    ##                    Min.                 1st Qu.                  Median 
+    ##            2.014000e+03            2.016000e+03            2.018000e+03 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##            2.017877e+03            2.020000e+03            2.022000e+03 
+    ##              Ecart type                     IQR                 Etendue 
+    ##            2.436940e+00            4.000000e+00            8.000000e+00 
+    ##                Variance coeficient de variation 
+    ##            5.938676e+00            1.207675e-03 
     ## 
     ## $reportedmonth
     ##                 mode                 freq               mode 2 
@@ -243,26 +280,38 @@ sapply(Major_Crime,my_summary)
     ## "0.0910756789594765" 
     ## 
     ## $reportedday
-    ##       Min.    1st Qu.     Median       Mean    3rd Qu.       Max. Ecart type 
-    ##   1.000000   8.000000  16.000000  15.736659  23.000000  31.000000   8.766766 
-    ##        IQR    Etendue   Variance Ecart type 
-    ##  15.000000  30.000000  76.856194   0.557092 
+    ##                    Min.                 1st Qu.                  Median 
+    ##                1.000000                8.000000               16.000000 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##               15.736659               23.000000               31.000000 
+    ##              Ecart type                     IQR                 Etendue 
+    ##                8.766766               15.000000               30.000000 
+    ##                Variance coeficient de variation 
+    ##               76.856194                0.557092 
     ## 
     ## $reporteddayofyear
-    ##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
-    ## 1.000000e+00 9.200000e+01 1.780000e+02 1.807658e+02 2.700000e+02 3.660000e+02 
-    ##   Ecart type          IQR      Etendue     Variance   Ecart type 
-    ## 1.037172e+02 1.780000e+02 3.650000e+02 1.075726e+04 5.737659e-01 
+    ##                    Min.                 1st Qu.                  Median 
+    ##            1.000000e+00            9.200000e+01            1.780000e+02 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##            1.807658e+02            2.700000e+02            3.660000e+02 
+    ##              Ecart type                     IQR                 Etendue 
+    ##            1.037172e+02            1.780000e+02            3.650000e+02 
+    ##                Variance coeficient de variation 
+    ##            1.075726e+04            5.737659e-01 
     ## 
     ## $reporteddayofweek
     ##                mode                freq              mode 2              freq 2 
     ##            "Monday" "0.147862286004521"            "Friday" "0.146152645958444" 
     ## 
     ## $reportedhour
-    ##       Min.    1st Qu.     Median       Mean    3rd Qu.       Max. Ecart type 
-    ##  0.0000000  8.0000000 13.0000000 12.8087859 18.0000000 23.0000000  6.5025623 
-    ##        IQR    Etendue   Variance Ecart type 
-    ## 10.0000000 23.0000000 42.2833167  0.5076642 
+    ##                    Min.                 1st Qu.                  Median 
+    ##               0.0000000               8.0000000              13.0000000 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##              12.8087859              18.0000000              23.0000000 
+    ##              Ecart type                     IQR                 Etendue 
+    ##               6.5025623              10.0000000              23.0000000 
+    ##                Variance coeficient de variation 
+    ##              42.2833167               0.5076642 
     ## 
     ## $occurrenceyear
     ##       Min.    1st Qu.     Median       Mean    3rd Qu.       Max.       NA's 
@@ -293,10 +342,14 @@ sapply(Major_Crime,my_summary)
     ##            "Friday" "0.151148778520282"          "Saturday" "0.148220812460786" 
     ## 
     ## $occurrencehour
-    ##       Min.    1st Qu.     Median       Mean    3rd Qu.       Max. Ecart type 
-    ##  0.0000000  7.0000000 14.0000000 12.6015908 19.0000000 23.0000000  7.2437527 
-    ##        IQR    Etendue   Variance Ecart type 
-    ## 12.0000000 23.0000000 52.4719529  0.5748284 
+    ##                    Min.                 1st Qu.                  Median 
+    ##               0.0000000               7.0000000              14.0000000 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##              12.6015908              19.0000000              23.0000000 
+    ##              Ecart type                     IQR                 Etendue 
+    ##               7.2437527              12.0000000              23.0000000 
+    ##                Variance coeficient de variation 
+    ##              52.4719529               0.5748284 
     ## 
     ## $mci_category
     ##                mode                freq              mode 2              freq 2 
@@ -315,32 +368,48 @@ sapply(Major_Crime,my_summary)
     ##             "Church-Yonge Corridor"                "0.0330043521128163" 
     ## 
     ## $Longitude
-    ##        Min.     1st Qu.      Median        Mean     3rd Qu.        Max. 
-    ## -80.0428663 -79.4710859 -79.3932382 -78.3740712 -79.3200558   0.0000000 
-    ##  Ecart type         IQR     Etendue    Variance  Ecart type 
-    ##   8.9532798   0.1510301  80.0428663  80.1612199  -0.1142378 
+    ##                    Min.                 1st Qu.                  Median 
+    ##             -80.0428663             -79.4710859             -79.3932382 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##             -78.3740712             -79.3200558               0.0000000 
+    ##              Ecart type                     IQR                 Etendue 
+    ##               8.9532798               0.1510301              80.0428663 
+    ##                Variance coeficient de variation 
+    ##              80.1612199              -0.1142378 
     ## 
     ## $Latitude
-    ##        Min.     1st Qu.      Median        Mean     3rd Qu.        Max. 
-    ##  0.00000000 43.65980581 43.69913160 43.14387406 43.75097753 44.33369129 
-    ##  Ecart type         IQR     Etendue    Variance  Ecart type 
-    ##  4.92861266  0.09117172 44.33369129 24.29122275  0.11423667 
+    ##                    Min.                 1st Qu.                  Median 
+    ##              0.00000000             43.65980581             43.69913160 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##             43.14387406             43.75097753             44.33369129 
+    ##              Ecart type                     IQR                 Etendue 
+    ##              4.92861266              0.09117172             44.33369129 
+    ##                Variance coeficient de variation 
+    ##             24.29122275              0.11423667 
     ## 
     ## $ObjectId
-    ##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
-    ## 1.000000e+00 7.530900e+04 1.506170e+05 1.506170e+05 2.259250e+05 3.012330e+05 
-    ##   Ecart type          IQR      Etendue     Variance   Ecart type 
-    ## 8.695862e+04 1.506160e+05 3.012320e+05 7.561802e+09 5.773493e-01
+    ##                    Min.                 1st Qu.                  Median 
+    ##            1.000000e+00            7.530900e+04            1.506170e+05 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##            1.506170e+05            2.259250e+05            3.012330e+05 
+    ##              Ecart type                     IQR                 Etendue 
+    ##            8.695862e+04            1.506160e+05            3.012320e+05 
+    ##                Variance coeficient de variation 
+    ##            7.561802e+09            5.773493e-01
 
 ``` r
 sapply(properties,my_summary)
 ```
 
     ## $...1
-    ##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
-    ## 0.000000e+00 1.994000e+04 3.403700e+04 4.287852e+04 6.150150e+04 1.249290e+05 
-    ##   Ecart type          IQR      Etendue     Variance   Ecart type 
-    ## 3.145625e+04 4.156150e+04 1.249290e+05 9.894955e+08 7.336132e-01 
+    ##                    Min.                 1st Qu.                  Median 
+    ##            0.000000e+00            1.994000e+04            3.403700e+04 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##            4.287852e+04            6.150150e+04            1.249290e+05 
+    ##              Ecart type                     IQR                 Etendue 
+    ##            3.145625e+04            4.156150e+04            1.249290e+05 
+    ##                Variance coeficient de variation 
+    ##            9.894955e+08            7.336132e-01 
     ## 
     ## $Address
     ##                              mode                              freq 
@@ -355,22 +424,34 @@ sapply(properties,my_summary)
     ## "0.0296635241213364" 
     ## 
     ## $`Price ($)`
-    ##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
-    ## 0.000000e+00 2.199000e+05 3.719000e+05 5.645438e+05 6.199000e+05 3.250000e+07 
-    ##   Ecart type          IQR      Etendue     Variance   Ecart type 
-    ## 8.475962e+05 4.000000e+05 3.250000e+07 7.184193e+11 1.501383e+00 
+    ##                    Min.                 1st Qu.                  Median 
+    ##            0.000000e+00            2.199000e+05            3.719000e+05 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##            5.645438e+05            6.199000e+05            3.250000e+07 
+    ##              Ecart type                     IQR                 Etendue 
+    ##            8.475962e+05            4.000000e+05            3.250000e+07 
+    ##                Variance coeficient de variation 
+    ##            7.184193e+11            1.501383e+00 
     ## 
     ## $lat
-    ##        Min.     1st Qu.      Median        Mean     3rd Qu.        Max. 
-    ## -999.000000   43.401087   43.715977   37.326614   44.466711   53.851017 
-    ##  Ecart type         IQR     Etendue    Variance  Ecart type 
-    ##   82.858347    1.065624 1052.851017 6865.505690    2.219820 
+    ##                    Min.                 1st Qu.                  Median 
+    ##             -999.000000               43.401087               43.715977 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##               37.326614               44.466711               53.851017 
+    ##              Ecart type                     IQR                 Etendue 
+    ##               82.858347                1.065624             1052.851017 
+    ##                Variance coeficient de variation 
+    ##             6865.505690                2.219820 
     ## 
     ## $lng
-    ##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
-    ## -999.0000000  -80.3081590  -79.5033420  -85.2183791  -79.1073265    1.0745190 
-    ##   Ecart type          IQR      Etendue     Variance   Ecart type 
-    ##   73.0935722    1.2008325 1000.0745190 5342.6703017   -0.8577208
+    ##                    Min.                 1st Qu.                  Median 
+    ##            -999.0000000             -80.3081590             -79.5033420 
+    ##                    Mean                 3rd Qu.                    Max. 
+    ##             -85.2183791             -79.1073265               1.0745190 
+    ##              Ecart type                     IQR                 Etendue 
+    ##              73.0935722               1.2008325            1000.0745190 
+    ##                Variance coeficient de variation 
+    ##            5342.6703017              -0.8577208
 
 ``` r
 select_numeric_cols <- function(df) {
@@ -532,3 +613,77 @@ corrplot(cor_maj4_num, type = "upper", order = "hclust", tl.col = 'black', tl.sr
 ```
 
 ![](tp_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+### Visualisation
+
+``` r
+Major_Crimetest <- Major_Crime %>% mutate(
+  offence = case_when(substr(offence,1,7) == "Assault" ~ "Assault",
+                      substr(offence,1,10) == "Aggravated" ~ "Assault",
+                      substr(offence,1,3) == "B&E" ~ "B&E",
+                      substr(offence,1,7) == "Robbery" ~ "Robbery",
+                      substr(offence,1,5) == "Theft" ~ "Robbery",
+                      substr(offence,1,9) == "Discharge" ~ "Firearm",
+                      substr(offence,1,3) == "Use" ~ "Firearm",
+                      substr(offence,1,8) == "Pointing" ~ "Firearm",
+                      substr(offence,1,3) == "Air" ~ "Firearm",
+                      TRUE ~ offence))
+
+Major_Crimetest$offence <- fct_infreq(Major_Crimetest$offence)
+
+ggplot(Major_Crimetest) +
+  aes(x = offence) +
+  geom_bar(fill = "#112446") +
+  theme_minimal()+
+  labs(x = "Type d'infractions", y = "Nombre", title = "classement des types infractions à Toronto")
+```
+
+![](tp_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+``` r
+budget %>%
+ filter(!(Command_Name %in% "Information&Technology Command (Command)")) %>%
+ filter(!(Pillar_Name %in% 
+ c("Centralized Service Chrgs & UNS (Pillar)", "Professionalism & Accountability (Pillar", "Finance & Business Mgmt (Pillar)", 
+ "People & Culture (Pillar)", "Information&Technology Command (Pillar)", "Combat Gun&Gang Violence Grant (Pillar)", 
+ "Community Safety&Policing Grant (Pillar)", "Provincial Guns&Gangs Grnt2 (Pillar)", "Community Safety&Policing Grnt2 (Pillar)"
+ ))) %>%
+ filter(!(Feature_Category %in% "Materials & Supplies")) %>%
+ ggplot() +
+  aes(x = Feature_Category, y = Amount) +
+  geom_col(fill = "#112446") +
+  theme_minimal()+
+  labs(x = "catégorie de fonctionnalités", y = "montant", title = "gestion de finance de la police de Toronto")
+```
+
+![](tp_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+
+``` r
+Major_Crimetest <- Major_Crimetest[Major_Crime$X != 0,]
+Major_Crimetest <- Major_Crimetest[Major_Crimetest$reportedmonth =="January",]
+Major_Crimetest <- Major_Crimetest[Major_Crimetest$reportedday < 5,]
+Major_Crimetest <- Major_Crimetest[Major_Crimetest$X > -8870000,]
+Major_Crimetest <- Major_Crimetest[Major_Crimetest$Y < 5440000,]
+
+ggplot(Major_Crimetest, mapping = aes(x = X, y = Y, color = offence)) +
+  geom_point(alpha = 0.5)+
+  labs(x = "Longitude", y = "Latitude", title = "Crime à Toronto")
+```
+
+![](tp_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+``` r
+propertiestest <- properties[properties$lng > -85,]
+propertiestest <- propertiestest[propertiestest$lng < -73,]
+propertiestest <- propertiestest[propertiestest$lat < 46.5,]
+colnames(propertiestest)[4] <- "Price"
+
+ggplot(propertiestest) +
+  aes(x = lng, y = lat, colour = Price) +
+  geom_point(shape = "circle", size = 1.5) +
+  scale_color_distiller(palette = "Set1", direction = 1) +
+  theme_minimal()+
+  labs(x = "Longitude", y = "Latitude", title = "Ventes Immobilière à Toronto")
+```
+
+![](tp_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
