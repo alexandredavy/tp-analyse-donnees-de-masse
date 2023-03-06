@@ -49,14 +49,23 @@ my_summary <- function(x) {
   {
     output1 <- summary(x)
     output2 <- sd(x)
-    names(output2) <- "Sd."
+    names(output2) <- "Ecart type"
     if(is.na(output2))
     {
         return(c(output1, output2))
     }
     output3 <- quantile(x)[4] - quantile(x)[2]
     names(output3) <- "IQR"
-    return(c(output1, output2, output3))
+    
+    output4 <- range(x)[2] - range(x)[1]
+    names(output4) <- "Etendue"
+    
+    output5 <- var(x)
+    names(output5) <- "Variance"
+    
+    output6 <- output2 / mean(x)
+    
+    return(c(output1, output2, output3,output4, output5, output6))
   }
   }
 
