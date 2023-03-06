@@ -10,6 +10,9 @@ library(tidyverse)
 library(dsbox) 
 library(corrplot)
 library(dplyr)
+library(readxl)
+library(outliers)
+library(ggplot2)
 ```
 
 ### Chargement datasets
@@ -231,6 +234,42 @@ ggplot(propertiestest) +
   labs(x = "Longitude", y = "Latitude", title = "Ventes Immobilière à Toronto")
 
 
+```
+
+
+
+```{r}
+#On regarde la présence d'outliers pour la dataset properties
+test <- grubbs.test(properties$`Price ($)`)
+test
+
+test <- grubbs.test(properties$`Price ($)`, opposite= TRUE)
+test
+
+boxplot(properties$`Price ($)`)
+
+#On peut voir la forte présence d'outliers sur le boxplot par l'apparition de points noirs. 
+
+mediane <- median(properties$`Price ($)`, na.rm=TRUE)
+properties$`Price ($)` <- ifelse(properties$`Price ($)` > quantile(properties$`Price ($)`, 0.75) + 1.5 * IQR(properties$`Price ($)`) | properties$`Price ($)` < quantile(properties$`Price ($)`, 0.25) - 1.5 * IQR(properties$`Price ($)`), mediane, properties$`Price ($)`)
+#On remplace par la médiane les outliers qu'on a détecté par le calcul de l'équart type.
+
+boxplot(properties$`Price ($)`)
+#On peut voir que les points noirs ont disparu.
+```
+
+```{r analyse}
+# On analyse uniquement les colonnes ou il y a possiblement des erreurs.
+for (col in colnames(Major_Crime)) {
+    print(paste("Fréquences pour la colonne", col, ":", sep=" "))
+    print(table(Major_Crime[, col]))
+  }
+#Après analyse de chacune des variables présentes dans les différentes colonnes nous avons pu remarqué dans la colonne Y la présence de données étant égales a 0 ce qui est impossible pour la colonne X et Y car étant des coordonnées.
+```
+ 
+```{r}
+#Comme on a constaté la présence de 0 sur la colonne Y a l'aide de cette fonction nous allons donc supprié toute la ligne.
+Major_Crime <- Major_Crime[Major_Crime$ Y!=0,]
 ```
 
 
