@@ -255,15 +255,25 @@ properties$`Price ($)` <- ifelse(properties$`Price ($)` > quantile(properties$`P
 #On remplace par la médiane les outliers qu'on a détecté par le calcul de l'équart type.
 
 boxplot(properties$`Price ($)`)
-#On peut voir que les points noirs ont disparu.
+#On peut voir que les outliers sont moins nombreux. Il reste quelque point noir mais qui ne sont pas concidéré comme des outliers.
 ```
 
 ```{r analyse}
 # On analyse uniquement les colonnes ou il y a possiblement des erreurs.
-for (col in colnames(Major_Crime)) {
-    print(paste("Fréquences pour la colonne", col, ":", sep=" "))
-    print(table(Major_Crime[, col]))
-  }
+
+table(Major_Crime$X)
+table(Major_Crime$Y)
+#On peut voir la présence de 0 dans les colonnes en X et en Y qui se répète par la suite aussi dans la longitude et lattitude
+table(Major_Crime$reportedyear)
+table(Major_Crime$reportedmonth)
+table(Major_Crime$reportedday)
+table(Major_Crime$reporteddayofweek)
+table(Major_Crime$reportedhour)
+#Il n'y a pas présence d'outliers ici
+table(Major_Crime$location_type)
+#On peut voir la présence d'une catégorie Unknow qui pourrait être un outliers mais qui pourrait juste être par exemple des enquêtes non élucidées ou des cadavres non retrouvé. 
+
+
 #Après analyse de chacune des variables présentes dans les différentes colonnes nous avons pu remarqué dans la colonne Y la présence de données étant égales a 0 ce qui est impossible pour la colonne X et Y car étant des coordonnées.
 ```
  
