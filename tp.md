@@ -17,7 +17,24 @@ library(dplyr)
 library(readxl)
 library(outliers)
 library(ggplot2)
+library(tidyr)
+library(plotly)
 ```
+
+    ## Warning: package 'plotly' was built under R version 4.2.2
+
+``` r
+library(treemap)
+```
+
+    ## Warning: package 'treemap' was built under R version 4.2.2
+
+``` r
+library(RColorBrewer)
+library(ggmap)
+```
+
+    ## Warning: package 'ggmap' was built under R version 4.2.2
 
 ### Chargement datasets
 
@@ -645,41 +662,62 @@ test
     ## G = 0.66605, U = 0.99998, p-value = 1
     ## alternative hypothesis: lowest value 0 is an outlier
 
+Afin de vérifier s’ il y a ou non présence de données aberrantes pour la
+base de données properties nous avons effectué le test de Grubbs pour le
+maximum et le minimum. Pour le maximum qui ici est égale à 32 500 000 on
+peut en conclure qu’ici ce n’est pas une donnée aberrante malgré le fait
+que la valeur soit très élevée. En effet, cette base de données recense
+le prix de l’immobilier et il est possible que certaines propriétés
+soient très chères. Pour le minimum qui est de 0 dans ce cas la est une
+donnée aberrante. En effet, dans le cas du prix d’une propriété il est
+impossible que cette valeur soit égale a 0. De plus, il existe d’autres
+valeurs très faibles qui peuvent nous faire penser à la présence
+d’outliers. On peut donc en conclure que cette ligne est par conséquent
+fausse est doit être rectifiée.
+
+Un autre indicateur montrant la présence d’outliers est le graphique en
+boîte à moustache. On peut voir ici par la présence de points noir
+représentant des outliers. Il va donc falloir faire en sorte de les
+supprimer afin d’avoir les données les plus lisses que possible.
+
 ``` r
 boxplot(properties$`Price ($)`)
 ```
 
-![](tp_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
-
-On peut voir la forte présence d’outliers sur le boxplot par
-l’apparition de points noirs.
+![](tp_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 ``` r
 mediane <- median(properties$`Price ($)`, na.rm=TRUE)
 properties$`Price ($)` <- ifelse(properties$`Price ($)` > quantile(properties$`Price ($)`, 0.75) + 1.5 * IQR(properties$`Price ($)`) | properties$`Price ($)` < quantile(properties$`Price ($)`, 0.25) - 1.5 * IQR(properties$`Price ($)`), mediane, properties$`Price ($)`)
 ```
 
-On remplace par la médiane les outliers qu’on a détecté par le calcul de
-l’équart type.
+Pour cela on cherche les outliers et on les remplace par la médiane
+qu’on a calculée à l’aide d’écart type. Après ça, on peut voir un
+graphique en boîte à moustache plus cohérent. Il reste cependant quelque
+point noir mais qui ne sont pas concidéré comme des outliers mais
+uniquement des valeurs élevées.
 
 ``` r
 boxplot(properties$`Price ($)`)
 ```
 
-![](tp_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+![](tp_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
-On peut voir que les outliers sont moins nombreux. Il reste quelque
-point noir mais qui ne sont pas concidéré comme des outliers.
+Par la suite dans le dataset Major_Crime nous avons analysé toutes les
+colonnes afin de faire apparaître la présence de données aberrantes.
+Pour cela, nous avons sélectionné les colonnes principales dans
+lesquelles des données aberrantes peuvent apparaître comme X,Y Mois,
+Jours, Année, heures…
 
-On analyse uniquement les colonnes ou il y a possiblement des erreurs.
+On peut voir que pour les colonnes X et Y il y a la présence de 0 ce qui
+est impossible pour le cas des coordonnées. Nous avons donc supprimé
+toutes les lignes dans le cas où un 0 apparaissait. Pour les restes des
+colonnes aucune valeur aberrantes n’était présente.
 
 ``` r
 table(Major_Crime$X)
 table(Major_Crime$Y)
 ```
-
-On peut voir la présence de 0 dans les colonnes en X et en Y qui se
-répète par la suite aussi dans la longitude et lattitude
 
     ## 
     ##  2014  2015  2016  2017  2018  2019  2020  2021  2022 
@@ -708,8 +746,6 @@ répète par la suite aussi dans la longitude et lattitude
     ## 10351  9670  9161  7721  6484  5520  7353 10002 12352 14236 14162 14536 15352 
     ##    13    14    15    16    17    18    19    20    21    22    23 
     ## 15561 15501 16194 15704 15312 15717 15286 14816 14472 13141 12629
-
-Il n’y a pas présence d’outliers ici
 
     ## 
     ##                                       Apartment (Rooming House, Condo) 
@@ -817,47 +853,25 @@ Il n’y a pas présence d’outliers ici
     ##                                                                Unknown 
     ##                                                                    743
 
-On peut voir la présence d’une catégorie Unknow qui pourrait être un
-outliers mais qui pourrait juste être par exemple des enquêtes non
-élucidées ou des cadavres non retrouvé.
-
-Après analyse de chacune des variables présentes dans les différentes
-colonnes nous avons pu remarqué dans la colonne Y la présence de données
-étant égales a 0 ce qui est impossible pour la colonne X et Y car étant
-des coordonnées.
-
-Comme on a constaté la présence de 0 sur la colonne Y a l’aide de cette
-fonction nous allons donc supprié toute la ligne.
-
 ``` r
 Major_Crime <- Major_Crime[Major_Crime$ Y!=0,]
 ```
 
-### Visualisation
+### Visualisation Adrien et Alpha
 
-``` r
-Major_Crimetest <- Major_Crime %>% mutate(
-  offence = case_when(substr(offence,1,7) == "Assault" ~ "Assault",
-                      substr(offence,1,10) == "Aggravated" ~ "Assault",
-                      substr(offence,1,3) == "B&E" ~ "B&E",
-                      substr(offence,1,7) == "Robbery" ~ "Robbery",
-                      substr(offence,1,5) == "Theft" ~ "Robbery",
-                      substr(offence,1,9) == "Discharge" ~ "Firearm",
-                      substr(offence,1,3) == "Use" ~ "Firearm",
-                      substr(offence,1,8) == "Pointing" ~ "Firearm",
-                      substr(offence,1,3) == "Air" ~ "Firearm",
-                      TRUE ~ offence))
+![](tp_files/figure-gfm/graph1-1.png)<!-- -->
 
-Major_Crimetest$offence <- fct_infreq(Major_Crimetest$offence)
-
-ggplot(Major_Crimetest) +
-  aes(x = offence) +
-  geom_bar(fill = "#112446") +
-  theme_minimal()+
-  labs(x = "Type d'infractions", y = "Nombre", title = "classement des types infractions à Toronto")
-```
-
-![](tp_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+    ## $x
+    ## [1] "Type d'infractions"
+    ## 
+    ## $y
+    ## [1] "Nombre"
+    ## 
+    ## $title
+    ## [1] "classement des types infractions à Toronto"
+    ## 
+    ## attr(,"class")
+    ## [1] "labels"
 
 Le résultat de ce code est un graphique à barres qui permet de
 visualiser le nombre d’infractions de différents types à Toronto. Les
@@ -875,47 +889,9 @@ cas-ci, le graphique met en évidence les types d’infractions les plus
 courantes à Toronto, ce qui peut aider à cibler les efforts de
 prévention et de répression.
 
-``` r
-budget %>%
- filter(!(Command_Name %in% "Information&Technology Command (Command)")) %>%
- filter(!(Pillar_Name %in% 
- c("Centralized Service Chrgs & UNS (Pillar)", "Professionalism & Accountability (Pillar", "Finance & Business Mgmt (Pillar)", 
- "People & Culture (Pillar)", "Information&Technology Command (Pillar)", "Combat Gun&Gang Violence Grant (Pillar)", 
- "Community Safety&Policing Grant (Pillar)", "Provincial Guns&Gangs Grnt2 (Pillar)", "Community Safety&Policing Grnt2 (Pillar)"
- ))) %>%
- filter(!(Feature_Category %in% "Materials & Supplies")) %>%
- ggplot() +
-  aes(x = Feature_Category, y = Amount) +
-  geom_col(fill = "#112446") +
-  theme_minimal()+
-  labs(x = "catégorie de fonctionnalités", y = "montant", title = "gestion de finance de la police de Toronto")
-```
+![](tp_files/figure-gfm/graph2-1.png)<!-- -->
 
-![](tp_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
-
-Le résultat de ce code est un graphique à barres qui montre le montant
-du budget alloué à différentes catégories de fonctionnalités de la
-police de Toronto. Les catégories sont représentées sur l’axe des x et
-les montants du budget sur l’axe des y. Les barres sont colorées en bleu
-foncé. Le titre du graphique est “gestion de finance de la police de
-Toronto”, et les axes sont étiquetés en conséquence. Les données ont été
-filtrées pour exclure les catégories de fonctionnalités liées aux
-“Matériaux et fournitures”, ainsi que les commandes et les catégories de
-fonctionnalités qui ne sont pas pertinentes pour le graphique.
-
-``` r
-Major_Crimetest <- Major_Crimetest[Major_Crime$X != 0,]
-Major_Crimetest <- Major_Crimetest[Major_Crimetest$reportedmonth =="January",]
-Major_Crimetest <- Major_Crimetest[Major_Crimetest$reportedday < 5,]
-Major_Crimetest <- Major_Crimetest[Major_Crimetest$X > -8870000,]
-Major_Crimetest <- Major_Crimetest[Major_Crimetest$Y < 5440000,]
-
-ggplot(Major_Crimetest, mapping = aes(x = X, y = Y, color = offence)) +
-  geom_point(alpha = 0.5)+
-  labs(x = "Longitude", y = "Latitude", title = "Crime à Toronto")
-```
-
-![](tp_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+![](tp_files/figure-gfm/graph3%20-1.png)<!-- -->
 
 Le résultat de ce code est un graphique à barres qui montre le montant
 du budget alloué à différentes catégories de fonctionnalités de la
@@ -940,39 +916,47 @@ ressources financières. Il permet également de comparer les montants de
 budget alloués à différentes catégories, ce qui peut aider à prendre des
 décisions éclairées sur la gestion financière de la police.
 
-``` r
-propertiestest <- properties[properties$lng > -85,]
-propertiestest <- propertiestest[propertiestest$lng < -73,]
-propertiestest <- propertiestest[propertiestest$lat < 46.5,]
-colnames(propertiestest)[4] <- "Price"
+![](tp_files/figure-gfm/graph4%20-1.png)<!-- -->
 
-ggplot(propertiestest) +
-  aes(x = lng, y = lat, colour = Price) +
-  geom_point(shape = "circle", size = 1.5) +
-  scale_color_distiller(palette = "Set1", direction = 1) +
-  theme_minimal()+
-  labs(x = "Longitude", y = "Latitude", title = "Ventes Immobilière à Toronto")
-```
+Le graphique ci-dessus permet de visualiser les zones avec le plus de
+crimes. On voit clairement que la ciminalité à Toronto est globalement
+basse, sauf dans la zone proche des îles.
 
-![](tp_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+![](tp_files/figure-gfm/graph5%20-1.png)<!-- -->
 
-Le code commence par filtrer les données dans l’objet Major_Crimetest.
-Les lignes où la valeur de la colonne X est égale à zéro sont
-supprimées, puis seules les observations de janvier sont conservées.
-Ensuite, seules les observations dont le jour rapporté est inférieur à 5
-sont conservées, ce qui peut signifier que l’auteur souhaite se
-concentrer sur les crimes signalés en début de mois. Enfin, seules les
-observations dont la valeur de la colonne X est supérieure à -8870000 et
-la valeur de la colonne Y est inférieure à 5440000 sont conservées, ce
-qui pourrait limiter la carte aux limites de la ville de Toronto. Le
-code utilise ensuite ggplot() pour créer une carte de points. La
-longitude est représentée sur l’axe des x et la latitude sur l’axe des
-y. Les points sont colorés en fonction de la colonne offence. Chaque
-point représente un crime signalé. La transparence est réglée à 0,5 pour
-faciliter la visualisation des superpositions de points. Le titre de la
-carte est “Crime à Toronto” et les axes sont étiquetés en conséquence.
-Ce type de graphique est utile pour visualiser la répartition
-géographique des différents types de crimes signalés à Toronto. Il peut
-aider à identifier les zones où certains types de crimes sont plus
-fréquents, ce qui peut aider les autorités à planifier des interventions
-ciblées pour réduire la criminalité.
+Ce code commence par filtrer les données immobilières pour ne conserver
+que les propriétés situées dans une certaine zone géographique définie
+par des limites de latitude et de longitude spécifiques. Il renomme
+ensuite la quatrième colonne du dataframe “Price”. Ensuite, le code
+utilise ggplot pour créer un graphique de dispersion des ventes
+immobilières à Toronto. Les données sont représentées sur un plan
+cartésien où la longitude est sur l’axe horizontal (axe des abscisses)
+et la latitude sur l’axe vertical (axe des ordonnées). Les points sont
+colorés en fonction du prix des propriétés. La fonction
+“scale_color_distiller” permet de spécifier une palette de couleurs (ici
+“Set1”) pour représenter la gamme des prix. Le résultat est un graphique
+qui montre la répartition spatiale des ventes immobilières à Toronto,
+avec les points de couleurs différentes en fonction du prix des
+propriétés.
+
+    ## 
+    ##  Pearson's product-moment correlation
+    ## 
+    ## data:  log(df5$Price) and df5$Nb_crimes
+    ## t = 0.58368, df = 286, p-value = 0.5599
+    ## alternative hypothesis: true correlation is not equal to 0
+    ## 95 percent confidence interval:
+    ##  -0.08141093  0.14947656
+    ## sample estimates:
+    ##        cor 
+    ## 0.03449305
+
+![](tp_files/figure-gfm/graph6%20-1.png)<!-- -->
+
+la corrélation entre les deux variables est à 95 de% de chance d’être
+entre -10,6% et 12,4%. dans tout les cas elle est négligable voir peut
+être indépendante.
+
+![](tp_files/figure-gfm/graph%207%20-1.png)<!-- -->
+
+![](tp_files/figure-gfm/graph%208%20-1.png)<!-- -->

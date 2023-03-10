@@ -13,6 +13,11 @@ library(dplyr)
 library(readxl)
 library(outliers)
 library(ggplot2)
+library(tidyr)
+library(plotly)
+library(treemap)
+library(RColorBrewer)
+library(ggmap)
 ```
 
 ### Chargement datasets
@@ -172,34 +177,37 @@ test
 
 test <- grubbs.test(properties$`Price ($)`, opposite= TRUE)
 test
+```
 
+Afin de vérifier s' il y a ou non présence de données aberrantes pour la base de données properties nous avons effectué le test de Grubbs pour le maximum et le minimum. Pour le maximum qui ici est égale à 32 500 000 on peut en conclure qu’ici ce n’est pas une donnée aberrante malgré le fait que la valeur soit très élevée. En effet, cette base de données recense le prix de l’immobilier et il est possible que certaines propriétés soient très chères.
+Pour le minimum qui est de 0 dans ce cas la est une donnée aberrante. En effet, dans le cas du prix d’une propriété il est impossible que cette valeur soit égale a 0. De plus, il existe d’autres valeurs très faibles qui peuvent nous faire penser à la présence d’outliers. On peut donc en conclure que cette ligne est par conséquent fausse est doit être rectifiée.
+
+Un autre indicateur montrant la présence d’outliers est le graphique en boîte à moustache. On peut voir ici par la présence de points noir représentant des outliers. Il va donc falloir faire en sorte de les supprimer afin d’avoir les données les plus lisses que possible.
+
+```{r}
 boxplot(properties$`Price ($)`)
 
 ```
-
-On peut voir la forte présence d'outliers sur le boxplot par l'apparition de points noirs. 
 
 ```{r}
 mediane <- median(properties$`Price ($)`, na.rm=TRUE)
 properties$`Price ($)` <- ifelse(properties$`Price ($)` > quantile(properties$`Price ($)`, 0.75) + 1.5 * IQR(properties$`Price ($)`) | properties$`Price ($)` < quantile(properties$`Price ($)`, 0.25) - 1.5 * IQR(properties$`Price ($)`), mediane, properties$`Price ($)`)
 ```
 
-On remplace par la médiane les outliers qu'on a détecté par le calcul de l'équart type.
+Pour cela on cherche les outliers et on les remplace par la médiane qu’on a calculée à l’aide d'écart type. Après ça, on peut voir un graphique en boîte à moustache plus cohérent. Il reste cependant quelque point noir mais qui ne sont pas concidéré comme des outliers mais uniquement des valeurs élevées.
 
 ```{r}
 boxplot(properties$`Price ($)`)
 ```
 
-On peut voir que les outliers sont moins nombreux. Il reste quelque point noir mais qui ne sont pas concidéré comme des outliers.
+Par la suite dans le dataset Major_Crime nous avons analysé toutes les colonnes afin de faire apparaître la présence de données aberrantes. Pour cela, nous avons sélectionné les colonnes principales dans lesquelles des données aberrantes peuvent apparaître comme X,Y Mois, Jours, Année, heures…
 
+On peut voir que pour les colonnes X et Y il y a la présence de 0 ce qui est impossible pour le cas des coordonnées. Nous avons donc supprimé toutes les lignes dans le cas où un 0 apparaissait. Pour les restes des colonnes aucune valeur aberrantes n'était présente.
 
-On analyse uniquement les colonnes ou il y a possiblement des erreurs.
 ```{r analyse, results='hide'}
 table(Major_Crime$X)
 table(Major_Crime$Y)
 ```
-
-On peut voir la présence de 0 dans les colonnes en X et en Y qui se répète par la suite aussi dans la longitude et lattitude
 
 ```{r , echo=FALSE}
 table(Major_Crime$reportedyear)
@@ -209,27 +217,17 @@ table(Major_Crime$reporteddayofweek)
 table(Major_Crime$reportedhour)
 ```
 
-Il n'y a pas présence d'outliers ici
-
 ```{r, echo=FALSE}
 table(Major_Crime$location_type)
 ```
-
-On peut voir la présence d'une catégorie Unknow qui pourrait être un outliers mais qui pourrait juste être par exemple des enquêtes non élucidées ou des cadavres non retrouvé. 
-
-
-Après analyse de chacune des variables présentes dans les différentes colonnes nous avons pu remarqué dans la colonne Y la présence de données étant égales a 0 ce qui est impossible pour la colonne X et Y car étant des coordonnées.
-
-
-Comme on a constaté la présence de 0 sur la colonne Y a l'aide de cette fonction nous allons donc supprié toute la ligne.
 
 ```{r}
 Major_Crime <- Major_Crime[Major_Crime$ Y!=0,]
 ```
 
-### Visualisation
+### Visualisation Adrien et Alpha 
 
-```{r}
+```{r graph1,echo=FALSE, include=TRUE, warning=FALSE,message=FALSE}
 Major_Crimetest <- Major_Crime %>% mutate(
   offence = case_when(substr(offence,1,7) == "Assault" ~ "Assault",
                       substr(offence,1,10) == "Aggravated" ~ "Assault",
@@ -247,15 +245,15 @@ Major_Crimetest$offence <- fct_infreq(Major_Crimetest$offence)
 ggplot(Major_Crimetest) +
   aes(x = offence) +
   geom_bar(fill = "#112446") +
-  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  ggtitle("Répartition des types de crimes à Toronto")
   labs(x = "Type d'infractions", y = "Nombre", title = "classement des types infractions à Toronto")
 ```
 
 Le résultat de ce code est un graphique à barres qui permet de visualiser le nombre d'infractions de différents types à Toronto. Les types d'infractions sont regroupés en quatre catégories : Assault, B&E, Robbery et Firearm. Les barres représentent le nombre d'infractions de chaque type, et sont colorées en bleu foncé. Les niveaux de la variable offence sont ordonnés en fonction de leur fréquence d'apparition dans les données d'entrée. Le graphique montre que le type d'infraction le plus fréquent est le vol à l'étalage (Robbery), suivi de l'infraction de type Assault. Les autres types d'infractions, B&E et Firearm, sont moins fréquents.
 Ce type de graphique à barres est utile pour représenter la distribution des valeurs d'une variable catégorielle. Il permet de comparer rapidement la fréquence de différentes catégories. Dans ce cas-ci, le graphique met en évidence les types d'infractions les plus courantes à Toronto, ce qui peut aider à cibler les efforts de prévention et de répression.
 
-
-```{r}
+```{r graph2,echo=FALSE, include=TRUE , warning=FALSE,message=FALSE}
 budget %>%
  filter(!(Command_Name %in% "Information&Technology Command (Command)")) %>%
  filter(!(Pillar_Name %in% 
@@ -265,25 +263,37 @@ budget %>%
  ))) %>%
  filter(!(Feature_Category %in% "Materials & Supplies")) %>%
  ggplot() +
-  aes(x = Feature_Category, y = Amount) +
+  aes(x = Feature_Category, y = (Amount/1000000)*-1) +
   geom_col(fill = "#112446") +
   theme_minimal()+
-  labs(x = "catégorie de fonctionnalités", y = "montant", title = "gestion de finance de la police de Toronto")
+  labs(x = "Type de dépense", y = "Montant total en million ($)", title = "Type de dépense et revenus de la police de Toronto")
 ```
 
-Le résultat de ce code est un graphique à barres qui montre le montant du budget alloué à différentes catégories de fonctionnalités de la police de Toronto. Les catégories sont représentées sur l'axe des x et les montants du budget sur l'axe des y. Les barres sont colorées en bleu foncé. Le titre du graphique est "gestion de finance de la police de Toronto", et les axes sont étiquetés en conséquence.
-Les données ont été filtrées pour exclure les catégories de fonctionnalités liées aux "Matériaux et fournitures", ainsi que les commandes et les catégories de fonctionnalités qui ne sont pas pertinentes pour le graphique.
+```{r graph3 ,echo=FALSE, include=TRUE, warning=FALSE,message=FALSE}
+budget_salary <- budget[budget$Feature_Category == 'Salaries',]
 
-```{r}
-Major_Crimetest <- Major_Crimetest[Major_Crime$X != 0,]
-Major_Crimetest <- Major_Crimetest[Major_Crimetest$reportedmonth =="January",]
-Major_Crimetest <- Major_Crimetest[Major_Crimetest$reportedday < 5,]
-Major_Crimetest <- Major_Crimetest[Major_Crimetest$X > -8870000,]
-Major_Crimetest <- Major_Crimetest[Major_Crimetest$Y < 5440000,]
+group_sal_element <- budget_salary %>%
+  group_by(Feature_Category , Cost_Element_Long_Name) %>%
+  summarise(Somme_en_million = sum(Amount)/1000000)
 
-ggplot(Major_Crimetest, mapping = aes(x = X, y = Y, color = offence)) +
-  geom_point(alpha = 0.5)+
-  labs(x = "Longitude", y = "Latitude", title = "Crime à Toronto")
+group_sal_element$prop <- group_sal_element$Somme_en_million / sum(group_sal_element$Somme_en_million)*100
+
+group_sal_element_10 <- top_n(group_sal_element,9,prop)
+ 
+gse_other = list("Salaries", "Other", sum(group_sal_element$Somme_en_million)-sum(group_sal_element_10$Somme_en_million),100-sum(group_sal_element_10$prop))
+
+group_sal_element_10 <- as.data.frame(group_sal_element_10)
+
+group_sal_element_10 = rbind(group_sal_element_10, gse_other)
+ 
+treemap(group_sal_element_10,
+            index="Cost_Element_Long_Name",
+            vSize="Somme_en_million",
+            type="index",
+            palette = "YlGnBu",
+            title="Repartition des depenses salariales",
+            fontsize.title=12,
+            )
 
 ```
 
@@ -292,30 +302,184 @@ Les données ont été filtrées pour exclure les catégories de fonctionnalité
 Le graphique montre que la catégorie de fonctionnalités la plus coûteuse de la police de Toronto est "Salaires et avantages sociaux", suivie par "Véhicules et équipement", "Services professionnels et contrat de service" et "Immobilier et bâtiments". Ces quatre catégories représentent la grande majorité du budget alloué à la police de Toronto. Les autres catégories, telles que les "Logiciels" et les "Services publics", représentent des montants de budget nettement inférieurs.
 Ce type de graphique est utile pour visualiser la répartition des dépenses dans différentes catégories de fonctionnalités, ce qui peut aider à identifier les domaines où la police de Toronto consacre le plus de ressources financières. Il permet également de comparer les montants de budget alloués à différentes catégories, ce qui peut aider à prendre des décisions éclairées sur la gestion financière de la police.
 
-```{r}
+```{r graph4 ,echo=FALSE, include=TRUE, warning=FALSE,message=FALSE}
 
-propertiestest <- properties[properties$lng > -85,]
-propertiestest <- propertiestest[propertiestest$lng < -73,]
-propertiestest <- propertiestest[propertiestest$lat < 46.5,]
-colnames(propertiestest)[4] <- "Price"
+# https://towardsdatascience.com/plotting-spatial-data-in-r-a38a405a07f1
 
-ggplot(propertiestest) +
-  aes(x = lng, y = lat, colour = Price) +
-  geom_point(shape = "circle", size = 1.5) +
-  scale_color_distiller(palette = "Set1", direction = 1) +
-  theme_minimal()+
-  labs(x = "Longitude", y = "Latitude", title = "Ventes Immobilière à Toronto")
+register_google(key = "AIzaSyBaNwJ8QmiFpF55RijxHSSgT4gKUtVPmkI")
+map <- ggmap(get_googlemap(center = c(lon = -79.3831 , lat = 43.6532),
+                    zoom = 11, scale = 1,
+                    maptype ='roadmap',
+                    color = 'bw'))
 
+Major_Crime_graph<- Major_Crime[Major_Crime$X != 0,]
+Major_Crime_graph <- Major_Crime_graph[Major_Crime_graph$reportedmonth =="January",]
+Major_Crime_graph <- Major_Crime_graph[Major_Crime_graph$reportedday < 5,]
+
+Major_Crime_graph_zoom <- Major_Crime_graph[Major_Crime_graph$Longitude > -79.7,]
+Major_Crime_graph_zoom <- Major_Crime_graph_zoom[Major_Crime_graph_zoom$Longitude < -79.1,]
+Major_Crime_graph_zoom <- Major_Crime_graph_zoom[Major_Crime_graph_zoom$Latitude < 44,]
+Major_Crime_graph_zoom <- Major_Crime_graph_zoom[Major_Crime_graph_zoom$Latitude > 43.5,]
+
+
+area_crimes <- Major_Crime_graph_zoom %>% group_by(Neighbourhood) %>% summarise(
+  lat = mean(Latitude),
+  lng = mean(Longitude),
+  Nb_crimes = n())
+
+
+
+area_crimes <- as.data.frame(area_crimes)
+
+area_crimes$Nb_crimes <- as.numeric(area_crimes$Nb_crimes)
+
+area_crimes$categ <- cut(area_crimes$Nb_crimes,6,
+                         labels = c("Very low criminality","Low criminality","Some criminality","High criminality","Lot of criminality","Very high criminality" ))
+
+
+  map+
+  geom_point(aes(x = lng, y = lat,  colour = categ), data = area_crimes, size = 1.5,alpha = 0.95)+
+  scale_color_manual(values = c("#112446","#5e9ef4", "#c7eafe", "#f0979f","#de6868","#e01414"))+
+  labs(x = "Longitude", y = "Latitude", title = "Nombre de crimes par quartier")
 
 ```
 
-Le code commence par filtrer les données dans l'objet Major_Crimetest. Les lignes où la valeur de la colonne X est égale à zéro sont supprimées, puis seules les observations de janvier sont conservées. Ensuite, seules les observations dont le jour rapporté est inférieur à 5 sont conservées, ce qui peut signifier que l'auteur souhaite se concentrer sur les crimes signalés en début de mois. Enfin, seules les observations dont la valeur de la colonne X est supérieure à -8870000 et la valeur de la colonne Y est inférieure à 5440000 sont conservées, ce qui pourrait limiter la carte aux limites de la ville de Toronto.
-Le code utilise ensuite ggplot() pour créer une carte de points. La longitude est représentée sur l'axe des x et la latitude sur l'axe des y. Les points sont colorés en fonction de la colonne offence. Chaque point représente un crime signalé. La transparence est réglée à 0,5 pour faciliter la visualisation des superpositions de points.
-Le titre de la carte est "Crime à Toronto" et les axes sont étiquetés en conséquence. Ce type de graphique est utile pour visualiser la répartition géographique des différents types de crimes signalés à Toronto. Il peut aider à identifier les zones où certains types de crimes sont plus fréquents, ce qui peut aider les autorités à planifier des interventions ciblées pour réduire la criminalité.
+Le graphique ci-dessus permet de visualiser les zones avec le plus de crimes. On voit clairement que la ciminalité à Toronto est globalement basse, sauf dans la zone proche des îles.
+
+```{r graph5 ,echo=FALSE, include=TRUE, warning=FALSE, message=FALSE}
+
+city_prop <- properties %>% group_by(AreaName) %>% summarise(
+  lat = mean(lat),
+  lng = mean(lng),
+  Mean_Price = mean(`Price ($)`)
+)
+
+city_prop_zoom <- city_prop[city_prop$lng > -79.7,]
+city_prop_zoom <- city_prop_zoom[city_prop_zoom$lng < -79.1,]
+city_prop_zoom <- city_prop_zoom[city_prop_zoom$lat < 44,]
+city_prop_zoom <- city_prop_zoom[city_prop_zoom$lat > 43.5,]
 
 
+city_prop_zoom$categ <- cut(city_prop_zoom$Mean_Price,
+              breaks=c(0,200000, 500000, 1000000, 2500000, 7500000,999999999),
+              labels=c('K200$', 'k200-500$', 'K500k-M1$','M1-2.5$' ,'M2.5-7.5$','+M7.5$'))
 
 
+  map+
+  geom_point(aes(x = lng, y = lat,  colour = categ), data = city_prop_zoom, size = 1.5,alpha = 0.95)+
+  scale_color_manual(values = c("#e01414","#de6868", "#f0979f", "#c7eafe","#5e9ef4","#112446"))+
+  labs(x = "Longitude", y = "Latitude", title = "Prix moyen des ventes de propriété par Area à toronto")
+```
 
+Ce code commence par filtrer les données immobilières pour ne conserver que les propriétés situées dans une certaine zone géographique définie par des limites de latitude et de longitude spécifiques. Il renomme ensuite la quatrième colonne du dataframe "Price".
+Ensuite, le code utilise ggplot pour créer un graphique de dispersion des ventes immobilières à Toronto. Les données sont représentées sur un plan cartésien où la longitude est sur l'axe horizontal (axe des abscisses) et la latitude sur l'axe vertical (axe des ordonnées). Les points sont colorés en fonction du prix des propriétés. La fonction "scale_color_distiller" permet de spécifier une palette de couleurs (ici "Set1") pour représenter la gamme des prix. Le résultat est un graphique qui montre la répartition spatiale des ventes immobilières à Toronto, avec les points de couleurs différentes en fonction du prix des propriétés.
 
+```{r crime5 ,echo=FALSE, include=TRUE, warning=FALSE, message=FALSE, results = 'hide'}
+crime_5 <- Major_Crime
 
+crime_5$lat <- (floor(crime_5$Latitude*100)+0.5)/100
+crime_5$lng <- (floor(crime_5$Longitude*100)+0.5)/100
+
+crime_5_zoom <- crime_5[crime_5$lng > -79.7,]
+crime_5_zoom <- crime_5_zoom[crime_5_zoom$lng < -79.1,]
+crime_5_zoom <- crime_5_zoom[crime_5_zoom$lat < 44,]
+crime_5_zoom <- crime_5_zoom[crime_5_zoom$lat > 43.5,]
+
+gr_crime_5 <- crime_5_zoom %>% group_by(lat,lng)%>% summarise(Nb_crimes = n())
+
+gr_crime_5$categ <- with(gr_crime_5, paste(lat, lng, sep=" ; "))
+```
+
+```{r prop5 ,echo=FALSE, include=TRUE, warning=FALSE, message=FALSE}
+prop_5 <-properties
+
+prop_5$Lat <- (floor(prop_5$lat*100)+0.5)/100
+prop_5$Lng <- (floor(prop_5$lng*100)+0.5)/100
+
+prop_5_zoom <- prop_5[prop_5$Lng > -79.7,]
+prop_5_zoom <- prop_5_zoom[prop_5_zoom$Lng < -79.1,]
+prop_5_zoom <- prop_5_zoom[prop_5_zoom$Lat < 44,]
+prop_5_zoom <- prop_5_zoom[prop_5_zoom$Lat > 43.5,]
+
+gr_prop_5 <- prop_5_zoom %>% group_by(Lat,Lng)%>% summarise(Price = mean(`Price ($)`), nb_ventes = n())
+
+gr_prop_5$categ <- with(gr_prop_5, paste(Lat, Lng, sep=" ; "))
+
+```
+
+```{r df_5 ,echo=FALSE, include=TRUE, warning=FALSE , message=FALSE}
+df5 <- inner_join(gr_prop_5,gr_crime_5,by="categ")
+df5 <- df5[,!names(df5) %in% c("Lat", "Lng")]
+df5 <- df5[df5$Price>0 & df5$nb_ventes >5, ]
+dfcor5 <-df5[,!names(df5) %in% c("categ", "Lng")]
+```
+
+```{r graph6 ,echo=FALSE, include=TRUE, warning=FALSE, message=FALSE}
+cor.test(log(df5$Price), df5$Nb_crimes, method = "pearson")
+# la corrélation entre les deux variables est à 95 de% de chance d'être entre -10,6% et 12,4%. dans tout les cas elle est négligable voir peut être indépendante.
+
+cor5 = cor(dfcor5)
+corrplot(cor5, type = "upper", order = "hclust", tl.col = 'black', tl.srt = 45)
+
+```
+
+la corrélation entre les deux variables est à 95 de% de chance d'être entre -10,6% et 12,4%. dans tout les cas elle est négligable voir peut être indépendante.
+
+```{r graph 7 ,echo=FALSE, include=TRUE, warning=FALSE, message=FALSE}
+gr_crime_6 <- crime_5_zoom %>% group_by(lat,lng, mci_category)%>% summarise(Nb_crimes = n())
+gr_crime_6$categ <- with(gr_crime_6, paste(lat, lng, sep=" ; "))
+
+df6 <- inner_join(gr_prop_5,gr_crime_6,by="categ")
+df6 <- df6[,!names(df6) %in% c("Lat", "Lng")]
+
+df6$categ_p <-cut(df6$Price,breaks= c(-1,200000,9999999999),
+                         labels = c("Very Low Price","Other"))
+
+df6_2 <- df6 %>% group_by(categ_p,mci_category)%>% summarise(nb_agr = sum(Nb_crimes))
+df6_2$prop <- df6_2$nb_agr
+
+nb_agr_low = sum(df6_2[which(df6_2$categ_p=='Very Low Price'), 3])
+nb_agr_oth = sum(df6_2[which(df6_2$categ_p=='Other'), 3])
+
+index1 <- df6_2$categ_p == "Very Low Price"   
+index2 <- df6_2$categ_p=="Other"
+
+df6_2$prop[index1] <-(df6_2$prop[index1]/nb_agr_low) *100
+df6_2$prop[index2] <-(df6_2$prop[index2]/nb_agr_oth) *100
+
+ggplot(df6_2, aes(x=categ_p, y=prop, fill = mci_category, fill= mci_category)) + 
+  geom_bar(stat = "identity")+
+  scale_fill_manual(values = c("#112446","#c7eafe", "#5e9ef4","#22e3c0","#7915eb"))+
+  labs(x = "", y = "", title = "Difference de criminalité entre les quartiers à faible valeur foncière et les autres")
+
+```
+
+```{r graph 8 ,echo=FALSE, include=TRUE, warning=FALSE, message=FALSE}
+
+gr_crime_7 <- crime_5_zoom %>% group_by(lat,lng, premises_type)%>% summarise(Nb_crimes = n())
+gr_crime_7$categ <- with(gr_crime_7, paste(lat, lng, sep=" ; "))
+
+df7 <- inner_join(gr_prop_5,gr_crime_7,by="categ")
+df7 <- df7[,!names(df7) %in% c("Lat", "Lng")]
+
+df7$categ_p <-cut(df7$Price,breaks= c(-1,200000,9999999999),
+                         labels = c("Very Low Price","Other"))
+
+df7_2 <- df7 %>% group_by(categ_p,premises_type)%>% summarise(nb_agr = sum(Nb_crimes))
+df7_2$prop <- df7_2$nb_agr
+
+nb_agr_low = sum(df7_2[which(df7_2$categ_p=='Very Low Price'), 3])
+nb_agr_oth = sum(df7_2[which(df7_2$categ_p=='Other'), 3])
+
+index1 <- df7_2$categ_p == "Very Low Price"   
+index2 <- df7_2$categ_p=="Other"
+
+df7_2$prop[index1] <-(df7_2$prop[index1]/nb_agr_low) *100
+df7_2$prop[index2] <-(df7_2$prop[index2]/nb_agr_oth) *100
+
+ggplot(df7_2, aes(x=categ_p, y=prop, fill = premises_type, fill= premises_type)) + 
+  geom_bar(stat = "identity")+
+  scale_fill_manual(values = c("#112446","#c7eafe", "#5e9ef4","#22e3c0","#7915eb","#070299","#638391"))+
+  labs(x = "", y = "", title = "Difference de lieu de criminalité entre les quartiers à faible valeur foncière et les autres ")
+
+```
