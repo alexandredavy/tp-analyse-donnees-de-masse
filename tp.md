@@ -1,6 +1,7 @@
 TP1 - Criminalité à Toronto
 ================
-groupe B
+groupe B - Alexandre DAVY - Louis LIARD - Adrien SAVOYES - Louis
+SELLIER - Karamoko Alpha DIALLO - Paul ZANON
 
 ### Chargement librairies
 
@@ -857,7 +858,7 @@ table(Major_Crime$Y)
 Major_Crime <- Major_Crime[Major_Crime$ Y!=0,]
 ```
 
-### Visualisation Adrien et Alpha
+### Visualisation
 
 ![](tp_files/figure-gfm/graph1-1.png)<!-- -->
 
