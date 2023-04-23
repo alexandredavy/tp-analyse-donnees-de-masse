@@ -37,6 +37,13 @@ library(ggmap)
 
     ## Warning: package 'ggmap' was built under R version 4.2.2
 
+``` r
+library(rpart)
+library(rpart.plot)
+```
+
+    ## Warning: package 'rpart.plot' was built under R version 4.2.3
+
 ### Chargement datasets
 
 ``` r
@@ -860,104 +867,47 @@ Major_Crime <- Major_Crime[Major_Crime$ Y!=0,]
 
 ### Visualisation
 
-![](tp_files/figure-gfm/graph1-1.png)<!-- -->
+\###Classification des types de criminalités des quartiers
 
-    ## $x
-    ## [1] "Type d'infractions"
-    ## 
-    ## $y
-    ## [1] "Nombre"
-    ## 
-    ## $title
-    ## [1] "classement des types infractions à Toronto"
-    ## 
-    ## attr(,"class")
-    ## [1] "labels"
+\###ACP
 
-Le résultat de ce code est un graphique à barres qui permet de
-visualiser le nombre d’infractions de différents types à Toronto. Les
-types d’infractions sont regroupés en quatre catégories : Assault, B&E,
-Robbery et Firearm. Les barres représentent le nombre d’infractions de
-chaque type, et sont colorées en bleu foncé. Les niveaux de la variable
-offence sont ordonnés en fonction de leur fréquence d’apparition dans
-les données d’entrée. Le graphique montre que le type d’infraction le
-plus fréquent est le vol à l’étalage (Robbery), suivi de l’infraction de
-type Assault. Les autres types d’infractions, B&E et Firearm, sont moins
-fréquents. Ce type de graphique à barres est utile pour représenter la
-distribution des valeurs d’une variable catégorielle. Il permet de
-comparer rapidement la fréquence de différentes catégories. Dans ce
-cas-ci, le graphique met en évidence les types d’infractions les plus
-courantes à Toronto, ce qui peut aider à cibler les efforts de
-prévention et de répression.
+\###ACm
 
-![](tp_files/figure-gfm/graph2-1.png)<!-- -->
+\###AFC
 
-![](tp_files/figure-gfm/graph3%20-1.png)<!-- -->
+\###Prédiction de la valeur foncières des maisons de la ville de Toronto
 
-Le résultat de ce code est un graphique à barres qui montre le montant
-du budget alloué à différentes catégories de fonctionnalités de la
-police de Toronto. Les catégories sont représentées sur l’axe des x et
-les montants du budget sur l’axe des y. Les barres sont colorées en bleu
-foncé. Le titre du graphique est “gestion de finance de la police de
-Toronto”, et les axes sont étiquetés en conséquence. Les données ont été
-filtrées pour exclure les catégories de fonctionnalités liées aux
-“Matériaux et fournitures”, ainsi que les commandes et les catégories de
-fonctionnalités qui ne sont pas pertinentes pour le graphique. Le
-graphique montre que la catégorie de fonctionnalités la plus coûteuse de
-la police de Toronto est “Salaires et avantages sociaux”, suivie par
-“Véhicules et équipement”, “Services professionnels et contrat de
-service” et “Immobilier et bâtiments”. Ces quatre catégories
-représentent la grande majorité du budget alloué à la police de Toronto.
-Les autres catégories, telles que les “Logiciels” et les “Services
-publics”, représentent des montants de budget nettement inférieurs. Ce
-type de graphique est utile pour visualiser la répartition des dépenses
-dans différentes catégories de fonctionnalités, ce qui peut aider à
-identifier les domaines où la police de Toronto consacre le plus de
-ressources financières. Il permet également de comparer les montants de
-budget alloués à différentes catégories, ce qui peut aider à prendre des
-décisions éclairées sur la gestion financière de la police.
+``` r
+properties <- properties %>% mutate(
+  ClassPrice = case_when(`Price ($)` < quantile(properties$`Price ($)`)[1] ~ '1 quart',
+                         `Price ($)` < quantile(properties$`Price ($)`)[2] ~ '2 quart',
+                         `Price ($)` < quantile(properties$`Price ($)`)[3] ~ '3 quart',
+                      TRUE ~ '4 quart'))
+```
 
-![](tp_files/figure-gfm/graph4%20-1.png)<!-- -->
+\###regresion linéaire
 
-Le graphique ci-dessus permet de visualiser les zones avec le plus de
-crimes. On voit clairement que la ciminalité à Toronto est globalement
-basse, sauf dans la zone proche des îles.
+\###regresion logistique
 
-![](tp_files/figure-gfm/graph5%20-1.png)<!-- -->
+\###arbre de décision
 
-Ce code commence par filtrer les données immobilières pour ne conserver
-que les propriétés situées dans une certaine zone géographique définie
-par des limites de latitude et de longitude spécifiques. Il renomme
-ensuite la quatrième colonne du dataframe “Price”. Ensuite, le code
-utilise ggplot pour créer un graphique de dispersion des ventes
-immobilières à Toronto. Les données sont représentées sur un plan
-cartésien où la longitude est sur l’axe horizontal (axe des abscisses)
-et la latitude sur l’axe vertical (axe des ordonnées). Les points sont
-colorés en fonction du prix des propriétés. La fonction
-“scale_color_distiller” permet de spécifier une palette de couleurs (ici
-“Set1”) pour représenter la gamme des prix. Le résultat est un graphique
-qui montre la répartition spatiale des ventes immobilières à Toronto,
-avec les points de couleurs différentes en fonction du prix des
-propriétés.
+``` r
+model1 <- rpart(ClassPrice ~ lat + lng, data = properties, method = "class",
+                control = rpart.control(cp = 0.02))
 
-    ## 
-    ##  Pearson's product-moment correlation
-    ## 
-    ## data:  log(df5$Price) and df5$Nb_crimes
-    ## t = 0.58368, df = 286, p-value = 0.5599
-    ## alternative hypothesis: true correlation is not equal to 0
-    ## 95 percent confidence interval:
-    ##  -0.08141093  0.14947656
-    ## sample estimates:
-    ##        cor 
-    ## 0.03449305
+rpart.plot(model1)
+```
 
-![](tp_files/figure-gfm/graph6%20-1.png)<!-- -->
+![](tp_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
-la corrélation entre les deux variables est à 95 de% de chance d’être
-entre -10,6% et 12,4%. dans tout les cas elle est négligable voir peut
-être indépendante.
+``` r
+data.predict = properties[c(1:10), ]
 
-![](tp_files/figure-gfm/graph%207%20-1.png)<!-- -->
+pred <- predict(model1, 
+                newdata=data.predict, type = "class")
+pred
+```
 
-![](tp_files/figure-gfm/graph%208%20-1.png)<!-- -->
+    ##       1       2       3       4       5       6       7       8       9      10 
+    ## 4 quart 4 quart 4 quart 4 quart 4 quart 4 quart 4 quart 4 quart 4 quart 4 quart 
+    ## Levels: 2 quart 3 quart 4 quart

@@ -18,6 +18,8 @@ library(plotly)
 library(treemap)
 library(RColorBrewer)
 library(ggmap)
+library(rpart)
+library(rpart.plot)
 ```
 
 ### Chargement datasets
@@ -243,3 +245,72 @@ Major_Crimetest <- Major_Crime %>% mutate(
 Major_Crimetest$offence <- fct_infreq(Major_Crimetest$offence)
 
 ```
+
+###Classification des types de criminalités des quartiers
+
+
+###ACP
+
+
+###ACm
+
+
+###AFC
+
+
+###Prédiction de la valeur foncières des maisons de la ville de Toronto
+
+```{r}
+
+properties <- properties %>% mutate(
+  ClassPrice = case_when(`Price ($)` < quantile(properties$`Price ($)`)[1] ~ '1 quart',
+                         `Price ($)` < quantile(properties$`Price ($)`)[2] ~ '2 quart',
+                         `Price ($)` < quantile(properties$`Price ($)`)[3] ~ '3 quart',
+                      TRUE ~ '4 quart'))
+
+
+
+
+```
+
+
+###regresion linéaire 
+
+
+###regresion logistique
+
+
+###arbre de décision 
+
+```{r}
+
+
+model1 <- rpart(ClassPrice ~ lat + lng, data = properties, method = "class",
+                control = rpart.control(cp = 0.02))
+
+rpart.plot(model1)
+```
+
+```{r}
+data.predict = properties[c(1:10), ]
+
+pred <- predict(model1, 
+                newdata=data.predict, type = "class")
+pred
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
