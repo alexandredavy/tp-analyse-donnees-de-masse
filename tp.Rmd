@@ -1,5 +1,5 @@
 ---
-title: "TP1 - Criminalité à Toronto"
+title: "TP2 - Criminalité à Toronto"
 author: "groupe B - Alexandre DAVY - Louis LIARD - Adrien SAVOYES - Louis SELLIER  - Karamoko Alpha DIALLO  - Paul ZANON  "
 output: github_document
 ---
