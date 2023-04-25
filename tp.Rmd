@@ -304,11 +304,13 @@ head(properties$fitted)
 ### regresion logistique
 
 ```{r}
+# Convertir les valeurs en dehors de l'intervalle [0,1] en 0 ou 1
+properties$Price.... <- ifelse(properties$Price < 0, 0, properties$Price....)
+properties$Price.... <- ifelse(properties$Price > 1, 1, properties$Price....)
 
-model <- glm( Price ~ lat + lng, data = properties, family = binomial)
+# Ajuster le modèle de régression logistique binaire
+model <- glm(Price.... ~ lat + lng, data = properties, family = binomial)
 model
-
-
 ```
 
 
@@ -323,6 +325,7 @@ confint(model)
 properties$fitted = fitted(model) * max(properties$`Price ($)`)
 head(properties$fitted)
 ```
+
 ### arbre de décision 
 
 ```{r}
