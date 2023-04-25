@@ -269,6 +269,12 @@ properties <- properties %>% mutate(
                       TRUE ~ '4 quart'))
 
 
+properties <- properties %>% mutate(Price = (`Price ($)`+1)/(max(properties$`Price ($)`)-1))
+
+properties <- properties %>% mutate(Price = `Price ($)`/max(properties$`Price ($)`))
+
+
+
 
 
 ```
@@ -279,7 +285,26 @@ properties <- properties %>% mutate(
 
 ###regresion logistique
 
+```{r}
 
+model <- glm( Price ~ lat + lng, data = properties, family = binomial)
+model
+
+
+```
+
+
+```{r}
+coef(model)
+summary(model)
+confint(model)
+```
+
+```{r}
+
+properties$fitted = fitted(model) * max(properties$`Price ($)`)
+head(properties$fitted)
+```
 ###arbre de décision 
 
 ```{r}

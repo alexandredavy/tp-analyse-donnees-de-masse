@@ -883,11 +883,157 @@ properties <- properties %>% mutate(
                          `Price ($)` < quantile(properties$`Price ($)`)[2] ~ '2 quart',
                          `Price ($)` < quantile(properties$`Price ($)`)[3] ~ '3 quart',
                       TRUE ~ '4 quart'))
+
+
+properties <- properties %>% mutate(Price = (`Price ($)`+1)/(max(properties$`Price ($)`)-1))
+
+properties <- properties %>% mutate(Price = `Price ($)`/max(properties$`Price ($)`))
 ```
 
 \###regresion linéaire
 
 \###regresion logistique
+
+``` r
+model <- glm( Price ~ lat + lng, data = properties, family = binomial)
+```
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+``` r
+model
+```
+
+    ## 
+    ## Call:  glm(formula = Price ~ lat + lng, family = binomial, data = properties)
+    ## 
+    ## Coefficients:
+    ## (Intercept)          lat          lng  
+    ##     4.17446     -0.03676      0.04171  
+    ## 
+    ## Degrees of Freedom: 25350 Total (i.e. Null);  25348 Residual
+    ## Null Deviance:       5228 
+    ## Residual Deviance: 5192  AIC: 26100
+
+``` r
+coef(model)
+```
+
+    ## (Intercept)         lat         lng 
+    ##  4.17445792 -0.03675969  0.04171392
+
+``` r
+summary(model)
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = Price ~ lat + lng, family = binomial, data = properties)
+    ## 
+    ## Deviance Residuals: 
+    ##      Min        1Q    Median        3Q       Max  
+    ## -1.47483  -0.31496  -0.04156   0.20373   1.55514  
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept)  4.174458   0.893231   4.673 2.96e-06 ***
+    ## lat         -0.036760   0.006671  -5.511 3.58e-08 ***
+    ## lng          0.041714   0.007562   5.516 3.47e-08 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## (Dispersion parameter for binomial family taken to be 1)
+    ## 
+    ##     Null deviance: 5227.8  on 25350  degrees of freedom
+    ## Residual deviance: 5192.2  on 25348  degrees of freedom
+    ## AIC: 26097
+    ## 
+    ## Number of Fisher Scoring iterations: 4
+
+``` r
+confint(model)
+```
+
+    ## Waiting for profiling to be done...
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
+
+    ##                   2.5 %      97.5 %
+    ## (Intercept)  2.47280123  5.96887817
+    ## lat         -0.05016137 -0.02405169
+    ## lng          0.02730779  0.05690706
+
+``` r
+properties$fitted = fitted(model) * max(properties$`Price ($)`)
+head(properties$fitted)
+```
+
+    ##        1        2        3        4        5        6 
+    ## 391266.0 391473.2 391290.9 393217.0 393498.9 393592.8
 
 \###arbre de décision
 
@@ -898,7 +1044,7 @@ model1 <- rpart(ClassPrice ~ lat + lng, data = properties, method = "class",
 rpart.plot(model1)
 ```
 
-![](tp_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+![](tp_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
 
 ``` r
 data.predict = properties[c(1:10), ]
