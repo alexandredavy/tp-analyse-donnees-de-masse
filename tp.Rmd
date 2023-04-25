@@ -20,6 +20,7 @@ library(RColorBrewer)
 library(ggmap)
 library(rpart)
 library(rpart.plot)
+library(DAAG)
 ```
 
 ### Chargement datasets
@@ -246,19 +247,19 @@ Major_Crimetest$offence <- fct_infreq(Major_Crimetest$offence)
 
 ```
 
-###Classification des types de criminalités des quartiers
+### Classification des types de criminalités des quartiers
 
 
-###ACP
+### ACP
 
 
-###ACm
+### ACm
 
 
-###AFC
+### AFC
 
 
-###Prédiction de la valeur foncières des maisons de la ville de Toronto
+### Prédiction de la valeur foncières des maisons de la ville de Toronto
 
 ```{r}
 
@@ -269,7 +270,6 @@ properties <- properties %>% mutate(
                       TRUE ~ '4 quart'))
 
 
-properties <- properties %>% mutate(Price = (`Price ($)`+1)/(max(properties$`Price ($)`)-1))
 
 properties <- properties %>% mutate(Price = `Price ($)`/max(properties$`Price ($)`))
 
@@ -280,10 +280,28 @@ properties <- properties %>% mutate(Price = `Price ($)`/max(properties$`Price ($
 ```
 
 
-###regresion linéaire 
+### regresion linéaire 
+```{r}
+
+model <- lm( `Price ($)` ~ lat + lng, data = properties, family = binomial)
+model
 
 
-###regresion logistique
+```
+
+```{r message=FALSE, warning=FALSE}
+coef(model)
+summary(model)
+confint(model)
+```
+
+```{r}
+
+properties$fitted = fitted(model)
+head(properties$fitted)
+```
+
+### regresion logistique
 
 ```{r}
 
@@ -294,7 +312,7 @@ model
 ```
 
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 coef(model)
 summary(model)
 confint(model)
@@ -305,7 +323,7 @@ confint(model)
 properties$fitted = fitted(model) * max(properties$`Price ($)`)
 head(properties$fitted)
 ```
-###arbre de décision 
+### arbre de décision 
 
 ```{r}
 

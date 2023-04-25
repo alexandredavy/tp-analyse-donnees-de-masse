@@ -44,6 +44,12 @@ library(rpart.plot)
 
     ## Warning: package 'rpart.plot' was built under R version 4.2.3
 
+``` r
+library(DAAG)
+```
+
+    ## Warning: package 'DAAG' was built under R version 4.2.3
+
 ### Chargement datasets
 
 ``` r
@@ -867,15 +873,15 @@ Major_Crime <- Major_Crime[Major_Crime$ Y!=0,]
 
 ### Visualisation
 
-\###Classification des types de criminalités des quartiers
+### Classification des types de criminalités des quartiers
 
-\###ACP
+### ACP
 
-\###ACm
+### ACm
 
-\###AFC
+### AFC
 
-\###Prédiction de la valeur foncières des maisons de la ville de Toronto
+### Prédiction de la valeur foncières des maisons de la ville de Toronto
 
 ``` r
 properties <- properties %>% mutate(
@@ -885,14 +891,80 @@ properties <- properties %>% mutate(
                       TRUE ~ '4 quart'))
 
 
-properties <- properties %>% mutate(Price = (`Price ($)`+1)/(max(properties$`Price ($)`)-1))
 
 properties <- properties %>% mutate(Price = `Price ($)`/max(properties$`Price ($)`))
 ```
 
-\###regresion linéaire
+### regresion linéaire
 
-\###regresion logistique
+``` r
+model <- lm( `Price ($)` ~ lat + lng, data = properties, family = binomial)
+```
+
+    ## Warning: In lm.fit(x, y, offset = offset, singular.ok = singular.ok, ...) :
+    ##  extra argument 'family' will be disregarded
+
+``` r
+model
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = `Price ($)` ~ lat + lng, data = properties, family = binomial)
+    ## 
+    ## Coefficients:
+    ## (Intercept)          lat          lng  
+    ##     1614805        -9133        10364
+
+``` r
+coef(model)
+```
+
+    ## (Intercept)         lat         lng 
+    ## 1614804.928   -9132.836   10364.424
+
+``` r
+summary(model)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = `Price ($)` ~ lat + lng, data = properties, family = binomial)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -780829 -169323  -23575  118656  853757 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 1614804.9    89622.4   18.02   <2e-16 ***
+    ## lat           -9132.8      669.1  -13.65   <2e-16 ***
+    ## lng           10364.4      758.5   13.66   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 246700 on 25348 degrees of freedom
+    ## Multiple R-squared:  0.007317,   Adjusted R-squared:  0.007238 
+    ## F-statistic: 93.41 on 2 and 25348 DF,  p-value: < 2.2e-16
+
+``` r
+confint(model)
+```
+
+    ##                   2.5 %      97.5 %
+    ## (Intercept) 1439139.929 1790469.928
+    ## lat          -10444.365   -7821.307
+    ## lng            8877.684   11851.164
+
+``` r
+properties$fitted = fitted(model)
+head(properties$fitted)
+```
+
+    ##        1        2        3        4        5        6 
+    ## 391453.2 391646.7 391476.2 393275.2 393538.3 393625.9
+
+### regresion logistique
 
 ``` r
 model <- glm( Price ~ lat + lng, data = properties, family = binomial)
@@ -954,74 +1026,6 @@ summary(model)
 confint(model)
 ```
 
-    ## Waiting for profiling to be done...
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
-    ## Warning in eval(family$initialize): non-integer #successes in a binomial glm!
-
     ##                   2.5 %      97.5 %
     ## (Intercept)  2.47280123  5.96887817
     ## lat         -0.05016137 -0.02405169
@@ -1035,7 +1039,7 @@ head(properties$fitted)
     ##        1        2        3        4        5        6 
     ## 391266.0 391473.2 391290.9 393217.0 393498.9 393592.8
 
-\###arbre de décision
+### arbre de décision
 
 ``` r
 model1 <- rpart(ClassPrice ~ lat + lng, data = properties, method = "class",
@@ -1044,7 +1048,7 @@ model1 <- rpart(ClassPrice ~ lat + lng, data = properties, method = "class",
 rpart.plot(model1)
 ```
 
-![](tp_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+![](tp_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
 
 ``` r
 data.predict = properties[c(1:10), ]
