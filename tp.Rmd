@@ -338,12 +338,22 @@ rpart.plot(model1)
 ```
 
 ```{r}
-data.predict = properties[c(1:10), ]
+df <- data.frame(merged_data$categ.y, pred)
 
-pred <- predict(model1, 
-                newdata=data.predict, type = "class")
-pred
+res <- 0
+
+i <- 1 # initialisation
+while (i <= nrow(df)) {
+  if (df$merged_data.categ.y[i]==df$pred[i])
+  {
+    res <- res+ 1
+  }
+  i <- i + 1 # incrementation du compteur
+}
+
+res/nrow(df)
 ```
+
 
 
 
